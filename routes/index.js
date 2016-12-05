@@ -1,78 +1,75 @@
-var express = require('express');
-var router = express.Router();
-var multer = require('multer');
-var upload = multer({dest: 'uploads'});
-var jimp = require("jimp");
+"use strict";
 
-var image;
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const upload = multer({dest: 'uploads'});
+const jimp = require("jimp");
+
+let image;
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    res.render('index', {title: 'Express', message: '', imagePath: ''});
+router.get('/', function (req, res) {
+  res.render('index', {title: 'Express', message: 'Select an image', imagePath: ''});
 });
 
-router.post('/upload', upload.single('image'), function (req, res, next) {
-    // req.file is the `image` file
-    // req.body will hold the text fields, if there were any
-    console.log(req.file);
-    image = req.file;
+router.post('/upload', upload.single('image'), function (req, res) {
+  // req.file is the `image` file
+  // req.body will hold the text fields, if there were any
+  console.log(req.file);
+  image = req.file;
+  res.render('index', {
+    title: 'Express',
+    message: 'File upload successfully',
+    imagePath: image.filename
+  });
+});
+
+router.get('/grayscale', function (req, res) {
+  transformGrayScale().then(path => {
     res.render('index', {
-        title: 'Image uploaded',
-        message: 'File upload successfully',
-        imagePath: image.filename
+      title: 'Express',
+      message: 'Image transformed successfully',
+      imagePath: path
+    })
+  }).catch(err => {
+    console.error(err);
+  });
+});
+
+router.get('/brightness', function (req, res) {
+  const value = parseFloat(req.query.value);
+  transformBrightness(value).then(path => {
+    res.render('index', {
+      title: 'Express',
+      message: 'Image transformed successfully',
+      imagePath: path
+    }).catch(err => {
+      console.error(err);
+    })
+  });
+});
+
+function transformGrayScale() {
+  return new Promise(function (resolve, reject) {
+    jimp.read(image.path).then(newImage => {
+      newImage.greyscale().write("uploads/" + image.originalname);
+      resolve(image.originalname);
+    }).catch(err => {
+      reject(err);
     });
-});
-
-router.get('/grayscale', function (req, res, next) {
-    transformGrayScale(res);
-});
-
-router.get('/brightness', function (req, res, next) {
-    var value = parseFloat(req.query.brightnessValue);
-    transformBrightness(res, value);
-});
-
-function transformGrayScale(res) {
-    jimp.read(image.path).then(function (newImage) {
-        newImage.greyscale().write(image.path + ".jpg");
-        res.render('index', {
-            title: 'Image transform',
-            message: 'Image process successfully',
-            imagePath: image.filename + ".jpg"
-        })
-    }).catch(function (err) {
-        console.error(err);
-    })
+  });
 }
 
-function transformBrightness(res, value) {
+function transformBrightness(value) {
+  return new Promise(function (resolve, reject) {
     jimp.read(image.path).then(function (newImage) {
-        newImage.brightness(value).write(image.path + ".jpg");
-        res.render('index', {
-            title: 'Image transform',
-            message: 'Image process successfully',
-            imagePath: image.filename + ".jpg"
-        })
+      newImage.brightness(value).write("uploads/" + image.originalname);
+      resolve(image.originalname);
     }).catch(function (err) {
-        console.error(err);
-    })
-}
-
-function transformRounded(res, value) {
-
-}
-
-function transformCropRounder(res, value) {
-    jimp.read(image.path).then(function (newImage) {
-        newImage.crop(value, value, value, value).write(image.path + ".jpg");
-        res.render('index', {
-            title: 'Image transform',
-            message: 'Image process successfully',
-            imagePath: image.filename + ".jpg"
-        })
-    }).catch(function (err) {
-        console.error(err);
-    })
+      reject(err);
+    });
+  })
 }
 
 module.exports = router;

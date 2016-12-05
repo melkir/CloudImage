@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/stylesheets/style.css'/>
 </head>
 <body>
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
 <form action="/upload" method="post" enctype="multipart/form-data">
-    Select image to upload:<br>
-    <input type="file" name="image"><br>
-    <input type="submit" value="Upload Image" id="upload" name="submit">
+  <input type="file" name="image"><br>
+  <input type="submit" value="Upload Image" id="upload" name="submit">
 </form>
 
 <p>Status: <%= message %></p>
 <img src="<%= imagePath %>">
 
-<form action="/grayscale">
-    <input type="submit" value="Gray scale">
-</form>
+<button onclick="location.href='/grayscale'" type="button">Grey scale</button>
 
 <form action="/brightness">
-    <input type="text" value="0" name="brightnessValue">
-    <input type="submit" value="Brightness">
+  <input type="text" value="0" name="value">
+  <input type="submit" value="Brightness">
 </form>
 
 </body>
