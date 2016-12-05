@@ -16,6 +16,7 @@ router.get('/', function (req, res) {
 router.post('/upload', upload.single('image'), function (req, res) {
   // req.file is the `image` file
   // req.body will hold the text fields, if there were any
+  if (req.file == null) return;
   console.log(req.file);
   image = req.file;
   res.render('index', {
