@@ -8,7 +8,7 @@ router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
 
-router.post('/profile', upload.single('image'), function (req, res, next) {
+router.post('/upload', upload.single('image'), function (req, res, next) {
     // req.file is the `image` file
     // req.body will hold the text fields, if there were any
     console.log(req.file);
